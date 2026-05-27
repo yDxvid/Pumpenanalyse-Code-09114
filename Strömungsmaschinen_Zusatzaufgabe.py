@@ -191,40 +191,58 @@ df["eta_smooth"] = (df["eta_pumpe"] * 100).rolling(WINDOW, center=True, min_peri
 # ------------------------------------------------------------
 
 print("========== Ergebnisse der Pumpenanalyse ==========")
+# Überschrift der Ergebnisübersicht ausgeben.
 
 print(f"Verwendete Kennlinie: {D_LAUFRAD} mm")
+# Verwendeten Laufraddurchmesser ausgeben.
 
 print(f"Markierter Betriebspunkt: V = {V_MARKIERT} m³/h, H = {H_MARKIERT} m")
+# Markierten Betriebspunkt ausgeben.
 
 print(f"Messzeitraum: {df['Timestamp'].min()} bis {df['Timestamp'].max()}")
+# Anfang und Ende des Messzeitraums ausgeben.
 
 print(f"Anzahl Messwerte: {len(df)}")
+# Anzahl der Messwerte ausgeben.
 
 print()
+# Leerzeile für bessere Lesbarkeit ausgeben.
 
 print(f"Mittlerer Volumenstrom: {df['V_m3h'].mean():.2f} m³/h")
+# Durchschnittlichen Volumenstrom ausgeben.
 
 print(f"Mittlere Förderhöhe: {df['H_m'].mean():.2f} m")
+# Durchschnittliche Förderhöhe ausgeben.
 
 print()
+# Leerzeile ausgeben.
 
 print(f"Energieverbrauch an der Pumpenwelle: {energie_pumpe:.2f} kWh")
+# Aufsummierte Energie an der Pumpenwelle ausgeben.
 
 print(f"Elektrischer Energieverbrauch inkl. Motor: {energie_elektrisch:.2f} kWh")
+# Elektrischen Energieverbrauch inklusive Motorverluste ausgeben.
 
 print(f"Hydraulisch genutzte Energie: {energie_hydraulisch:.2f} kWh")
+# Tatsächlich hydraulisch genutzte Energie ausgeben.
 
 print()
+# Leerzeile ausgeben.
 
 print(f"Durchschnittlicher Pumpenwirkungsgrad: {eta_pumpe_mittel * 100:.2f} %")
+# Durchschnittlichen Wirkungsgrad der Pumpe ausgeben.
 
 print(f"Durchschnittlicher Gesamtwirkungsgrad inkl. Motor: {eta_gesamt_mittel * 100:.2f} %")
+# Durchschnittlichen Gesamtwirkungsgrad inklusive Motor ausgeben.
 
 print()
+# Leerzeile ausgeben.
 
 print(f"Nicht hydraulisch genutzte Energie, nur Pumpe: {ungenutzte_energie_pumpe:.2f} kWh")
+# Energieverluste der Pumpe ausgeben.
 
 print(f"Nicht hydraulisch genutzte Energie inkl. Motor: {ungenutzte_energie_gesamt:.2f} kWh")
+# Energieverluste inklusive Motor ausgeben.
 
 
 # ------------------------------------------------------------
@@ -232,16 +250,16 @@ print(f"Nicht hydraulisch genutzte Energie inkl. Motor: {ungenutzte_energie_gesa
 # ------------------------------------------------------------
 
 V_betrieb = V_MARKIERT
-# Markierten Volumenstrom verwenden.
+# Markierten Volumenstrom für das Diagramm übernehmen.
 
 H_betrieb = H_MARKIERT
-# Markierte Förderhöhe verwenden.
+# Markierte Förderhöhe für das Diagramm übernehmen.
 
 v_plot = np.linspace(0, 575, 300)
-# Werte für die x-Achse erzeugen.
+# 300 gleichmäßig verteilte Volumenstromwerte für die Kennlinie erzeugen.
 
 h_plot = np.interp(v_plot, v_curve, h_curve)
-# Förderhöhe für die Kennlinie berechnen.
+# Förderhöhe für diese Werte aus der Kennlinie interpolieren.
 
 
 # ------------------------------------------------------------
@@ -249,8 +267,10 @@ h_plot = np.interp(v_plot, v_curve, h_curve)
 # ------------------------------------------------------------
 
 plt.figure(figsize=(10, 5))
+# Neues Diagramm mit festgelegter Größe erstellen.
 
 plt.plot(v_plot, h_plot, linewidth=2, label="269-mm-Kennlinie")
+# Pumpenkennlinie einzeichnen.
 
 plt.fill_between(
     [0, V_betrieb],
@@ -259,24 +279,34 @@ plt.fill_between(
     alpha=0.35,
     label="Hydraulische Leistung im markierten Betriebspunkt"
 )
+# Rechteckfläche darstellen, die die hydraulische Leistung veranschaulicht.
 
 plt.scatter(V_betrieb, H_betrieb, zorder=5)
+# Markierten Betriebspunkt als Punkt einzeichnen.
 
 plt.xlabel("Volumenstrom V [m³/h]")
+# X-Achse beschriften.
 
 plt.ylabel("Förderhöhe H [m]")
+# Y-Achse beschriften.
 
 plt.title("Hydraulische Leistung im markierten Betriebspunkt")
+# Titel des Diagramms setzen.
 
 plt.yticks(np.arange(0, 28, 2))
+# Y-Achse in 2-m-Schritten einteilen.
 
 plt.grid(True)
+# Gitternetz anzeigen.
 
 plt.legend()
+# Legende anzeigen.
 
 plt.tight_layout()
+# Layout automatisch anpassen.
 
 plt.show()
+# Diagramm anzeigen.
 
 
 # ------------------------------------------------------------
@@ -284,6 +314,7 @@ plt.show()
 # ------------------------------------------------------------
 
 df = df.set_index("Timestamp")
+# Zeitspalte als Index verwenden, damit Zeitdiagramme korrekt dargestellt werden.
 
 
 # ------------------------------------------------------------
@@ -291,20 +322,28 @@ df = df.set_index("Timestamp")
 # ------------------------------------------------------------
 
 plt.figure(figsize=(12, 5))
+# Neues Diagramm erstellen.
 
 plt.plot(df.index, df["V_smooth"], linewidth=2)
+# Geglätteten Volumenstrom über der Zeit darstellen.
 
 plt.xlabel("Zeit")
+# X-Achse beschriften.
 
 plt.ylabel("Volumenstrom [m³/h]")
+# Y-Achse beschriften.
 
 plt.title("Geglätteter Volumenstrom über der Zeit")
+# Titel des Diagramms setzen.
 
 plt.grid(True)
+# Gitternetz anzeigen.
 
 plt.tight_layout()
+# Layout automatisch anpassen.
 
 plt.show()
+# Diagramm anzeigen.
 
 
 # ------------------------------------------------------------
@@ -312,24 +351,34 @@ plt.show()
 # ------------------------------------------------------------
 
 plt.figure(figsize=(12, 5))
+# Neues Diagramm erstellen.
 
 plt.plot(df.index, df["P_abs_smooth"], linewidth=2, label="Pumpenleistung")
+# Geglättete aufgenommene Pumpenleistung darstellen.
 
 plt.plot(df.index, df["P_hyd_smooth"], linewidth=2, label="Hydraulische Leistung")
+# Geglättete hydraulische Nutzleistung darstellen.
 
 plt.xlabel("Zeit")
+# X-Achse beschriften.
 
 plt.ylabel("Leistung [kW]")
+# Y-Achse beschriften.
 
 plt.title("Geglättete Leistungen über der Zeit")
+# Titel des Diagramms setzen.
 
 plt.legend()
+# Legende anzeigen.
 
 plt.grid(True)
+# Gitternetz anzeigen.
 
 plt.tight_layout()
+# Layout automatisch anpassen.
 
 plt.show()
+# Diagramm anzeigen.
 
 
 # ------------------------------------------------------------
@@ -337,20 +386,28 @@ plt.show()
 # ------------------------------------------------------------
 
 plt.figure(figsize=(12, 5))
+# Neues Diagramm erstellen.
 
 plt.plot(df.index, df["eta_smooth"], linewidth=2)
+# Geglätteten Pumpenwirkungsgrad über der Zeit darstellen.
 
 plt.xlabel("Zeit")
+# X-Achse beschriften.
 
 plt.ylabel("Wirkungsgrad [%]")
+# Y-Achse beschriften.
 
 plt.title("Geglätteter Pumpenwirkungsgrad über der Zeit")
+# Titel des Diagramms setzen.
 
 plt.grid(True)
+# Gitternetz anzeigen.
 
 plt.tight_layout()
+# Layout automatisch anpassen.
 
 plt.show()
+# Diagramm anzeigen.
 
 
 # ------------------------------------------------------------
@@ -358,20 +415,28 @@ plt.show()
 # ------------------------------------------------------------
 
 plt.figure(figsize=(10, 5))
+# Neues Diagramm erstellen.
 
 plt.hist(df["V_m3h"], bins=30)
+# Histogramm des Volumenstroms mit 30 Klassen erstellen.
 
 plt.xlabel("Volumenstrom [m³/h]")
+# X-Achse beschriften.
 
 plt.ylabel("Häufigkeit")
+# Y-Achse beschriften.
 
 plt.title("Histogramm des Volumenstroms")
+# Titel des Diagramms setzen.
 
 plt.grid(True)
+# Gitternetz anzeigen.
 
 plt.tight_layout()
+# Layout automatisch anpassen.
 
 plt.show()
+# Diagramm anzeigen.
 
 
 # ------------------------------------------------------------
@@ -379,20 +444,28 @@ plt.show()
 # ------------------------------------------------------------
 
 plt.figure(figsize=(10, 5))
+# Neues Diagramm erstellen.
 
 plt.hist2d(df["V_m3h"], df["H_m"], bins=40)
+# Zweidimensionales Histogramm aus Volumenstrom und Förderhöhe erstellen.
 
 plt.xlabel("Volumenstrom V [m³/h]")
+# X-Achse beschriften.
 
 plt.ylabel("Förderhöhe H [m]")
+# Y-Achse beschriften.
 
 plt.title("Häufigkeit der Betriebspunkte")
+# Titel des Diagramms setzen.
 
 plt.colorbar(label="Anzahl der Messpunkte")
+# Farblegende für die Anzahl der Messpunkte anzeigen.
 
 plt.tight_layout()
+# Layout automatisch anpassen.
 
 plt.show()
+# Diagramm anzeigen.
 
 
 # ------------------------------------------------------------
@@ -400,22 +473,31 @@ plt.show()
 # ------------------------------------------------------------
 
 df["E_el_kumuliert_kWh"] = df["E_el_kWh"].cumsum()
+# Elektrische Energie über die Zeit aufsummieren.
 
 plt.figure(figsize=(12, 5))
+# Neues Diagramm erstellen.
 
 plt.plot(df.index, df["E_el_kumuliert_kWh"], linewidth=2)
+# Kumulierten elektrischen Energieverbrauch über der Zeit darstellen.
 
 plt.xlabel("Zeit")
+# X-Achse beschriften.
 
 plt.ylabel("Kumulierte Energie [kWh]")
+# Y-Achse beschriften.
 
 plt.title("Kumulierter elektrischer Energieverbrauch")
+# Titel des Diagramms setzen.
 
 plt.grid(True)
+# Gitternetz anzeigen.
 
 plt.tight_layout()
+# Layout automatisch anpassen.
 
 plt.show()
+# Diagramm anzeigen.
 
 
 # ------------------------------------------------------------
@@ -423,20 +505,28 @@ plt.show()
 # ------------------------------------------------------------
 
 plt.figure(figsize=(10, 5))
+# Neues Diagramm erstellen.
 
 plt.hist(df["eta_pumpe"] * 100, bins=30)
+# Histogramm des Pumpenwirkungsgrades in Prozent erstellen.
 
 plt.xlabel("Pumpenwirkungsgrad [%]")
+# X-Achse beschriften.
 
 plt.ylabel("Häufigkeit")
+# Y-Achse beschriften.
 
 plt.title("Verteilung des Pumpenwirkungsgrades")
+# Titel des Diagramms setzen.
 
 plt.grid(True)
+# Gitternetz anzeigen.
 
 plt.tight_layout()
+# Layout automatisch anpassen.
 
 plt.show()
+# Diagramm anzeigen.
 
 
 # ------------------------------------------------------------
@@ -444,25 +534,35 @@ plt.show()
 # ------------------------------------------------------------
 
 df["P_verlust_kW"] = df["P_abs_kW"] - df["P_hyd_kW"]
+# Verlustleistung als Differenz zwischen aufgenommener und hydraulischer Leistung berechnen.
 
 df["P_verlust_smooth"] = df["P_verlust_kW"].rolling(
     WINDOW,
     center=True,
     min_periods=1
 ).mean()
+# Verlustleistung mit gleitendem Mittelwert glätten.
 
 plt.figure(figsize=(12, 5))
+# Neues Diagramm erstellen.
 
 plt.plot(df.index, df["P_verlust_smooth"], linewidth=2)
+# Geglättete Verlustleistung über der Zeit darstellen.
 
 plt.xlabel("Zeit")
+# X-Achse beschriften.
 
 plt.ylabel("Verlustleistung [kW]")
+# Y-Achse beschriften.
 
 plt.title("Geglättete nicht hydraulisch genutzte Leistung")
+# Titel des Diagramms setzen.
 
 plt.grid(True)
+# Gitternetz anzeigen.
 
 plt.tight_layout()
+# Layout automatisch anpassen.
 
 plt.show()
+# Diagramm anzeigen.
